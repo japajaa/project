@@ -1,8 +1,3 @@
 {
-    "extends": [
-      "some-other-config-you-use",
-      "airbnb", 
-      "airbnb/hooks",
-      "prettier"
-    ]
-  }
+  "extends": ["some-other-config-you-use", "airbnb", "airbnb/hooks", "prettier"]
+}
