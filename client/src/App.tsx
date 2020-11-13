@@ -17,7 +17,7 @@ import ThemeWrapper from './components/Theme';
 
 const App = () => (
   <ThemeWrapper>
-    <Router>
+    <Router basename="/project">
       <div>
         <ul>
           <li>
