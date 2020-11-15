@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Card from '@material-ui/core/Card';
@@ -13,53 +13,25 @@ const useStyles = makeStyles({
   },
 });
 
-const mockData = [
-  {
-    name: 'Goulash stew',
-    description: 'Delicious stew made out of bell peppers and potatoes',
-    ingredients: [{ name: 'bell pepper', amount: '1 pcs' }, { name: 'potato', amount: '7 - 10 pcs' }],
-    instruction: 'Put stuff in a pot. Put pot in the oven and wait',
-  },
-  {
-    name: 'Hamburger1',
-    description: 'The best hamburger in the world',
-    ingredients: [{ name: 'bun', amount: '1 pcs' }, { name: 'ground beef patty', amount: '2 pcs' }],
-    instruction: 'Split the bun, put beef pattys in the middle. Enjoy!',
-  },
-  {
-    name: 'Hamburger2',
-    description: 'The best hamburger in the world',
-    ingredients: [{ name: 'bun', amount: '1 pcs' }, { name: 'ground beef patty', amount: '2 pcs' }],
-    instruction: 'Split the bun, put beef pattys in the middle. Enjoy!',
-  },
-  {
-    name: 'Hamburger3',
-    description: 'The best hamburger in the world',
-    ingredients: [{ name: 'bun', amount: '1 pcs' }, { name: 'ground beef patty', amount: '2 pcs' }],
-    instruction: 'Split the bun, put beef pattys in the middle. Enjoy!',
-  },
-  {
-    name: 'Hamburger4',
-    description: 'The best hamburger in the world',
-    ingredients: [{ name: 'bun', amount: '1 pcs' }, { name: 'ground beef patty', amount: '2 pcs' }],
-    instruction: 'Split the bun, put beef pattys in the middle. Enjoy!',
-  },
-  {
-    name: 'Hamburger5',
-    description: 'The best hamburger in the world',
-    ingredients: [{ name: 'bun', amount: '1 pcs' }, { name: 'ground beef patty', amount: '2 pcs' }],
-    instruction: 'Split the bun, put beef pattys in the middle. Enjoy!',
-  },
-  {
-    name: 'Hamburger6',
-    description: 'The best hamburger in the world',
-    ingredients: [{ name: 'bun', amount: '1 pcs' }, { name: 'ground beef patty', amount: '2 pcs' }],
-    instruction: 'Split the bun, put beef pattys in the middle. Enjoy!',
-  },
-];
-
 const Recipes = () => {
   const classes = useStyles();
+
+  const [data, setData] = useState<any>();
+
+  useEffect(() => {
+    const getJson = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/api/recipes');
+        const json = await response.json();
+        setData(json);
+      } catch (e) {
+        alert(`Error! ${e}`);
+      }
+    };
+    getJson();
+  }, []);
+
+
 
   return (
     <Container>
@@ -68,17 +40,18 @@ const Recipes = () => {
         Rutkasti herkullisia reseptejä, uudessa ulkoasussa!
       </Typography>
       <Grid container spacing={1}>
-        {mockData.map((recipe) => (
-          <Grid item xs={12} sm={6} md={4} lg={3}>
-            <Card key={recipe.name} className={classes.card}>
+        {data && data.map((recipe: any) => (
+          // eslint-disable-next-line no-underscore-dangle
+          <Grid key={recipe._id} item xs={12} sm={6} md={4} lg={3}>
+            <Card className={classes.card}>
               <CardHeader
                 title={recipe.name}
                 subheader={recipe.description}
               />
               <CardContent>
                 <Typography variant="body2" color="textSecondary" component="p">
-                  {recipe.ingredients.map((ingredient) => (
-                    <>
+                  {recipe.ingredients.map((ingredient: any) => (
+                    <React.Fragment key={ingredient.name}>
                       <span>
                         {ingredient.name}
                         {' '}
@@ -88,7 +61,7 @@ const Recipes = () => {
                       </span>
                       <br />
 
-                    </>
+                    </React.Fragment>
                   ))}
                   {recipe.instruction}
                 </Typography>
