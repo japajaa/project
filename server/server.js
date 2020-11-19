@@ -1,8 +1,9 @@
+require('dotenv').config();
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const app = express()
-const apiPort = 4000
+const apiPort = process.env.PORT || 4000
 const recipesResource = require('./resources/recipes.resource')
 const hslService = require('./services/hsl.service')
 
