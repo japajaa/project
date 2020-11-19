@@ -40,4 +40,24 @@ app.get('/api/departures', jsonParser, async (req, res) => {
   res.send(departures)
 })
 
+// POST /api/stops allows sending queries to HSL API
+app.post('/api/stops', jsonParser, async (req, res) => {
+
+  const stops = await hslService.getStops(req.body);
+
+  res.setHeader('Content-Type', 'application/json')
+  res.send(stops)
+})
+
+
+// POST /api/routes allows sending queries to HSL API
+app.post('/api/routes', jsonParser, async (req, res) => {
+
+  const routes = await hslService.getRoutes(req.body);
+
+  res.setHeader('Content-Type', 'application/json')
+  res.send(routes)
+})
+
+
 app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`))

@@ -1,5 +1,6 @@
 import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const theme = createMuiTheme({
   palette: {
@@ -13,6 +14,7 @@ interface ThemeWrapperProps {
 
 const ThemeWrapper = ({ children }: ThemeWrapperProps) => (
   <ThemeProvider theme={theme}>
+    <CssBaseline />
     {children}
   </ThemeProvider>
 );
