@@ -18,10 +18,12 @@ const Recipes = () => {
 
   const [data, setData] = useState<any>();
 
+  const baseUrl = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     const getJson = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/recipes');
+        const response = await fetch(`${baseUrl}api/recipes`);
         const json = await response.json();
         setData(json);
       } catch (e) {

@@ -6,10 +6,12 @@ const PublicTransport = () => {
 
   const [data, setData] = useState<any>();
 
+  const baseUrl = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     const getJson = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/departures');
+        const response = await fetch(`${baseUrl}api/departures`);
         const json = await response.json();
         setData(json);
       } catch (e) {

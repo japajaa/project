@@ -29,7 +29,4 @@ const App = () => (
   </ThemeWrapper>
 );
 
-// You can think of these components as "pages"
-// in your app.
-
 export default App;
