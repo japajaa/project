@@ -31,32 +31,69 @@ const allRecipes = await recipesResource.readRecipes();
   res.send(allRecipes)
 })
 
-// GET /api/departures returns list of bus/train departures
+// POST /api/departures returns list of departures for chosen routes at chosen stops
 app.get('/api/departures', jsonParser, async (req, res) => {
 
-  const departures = await hslService.getDepartures();
+  let stop = req.query.stop;
+  let route = req.query.route;
+
+  console.log(stop)
+
+
+
+
+  if (!stop) {
+    res.status(400).send('You need to query for one or more stops')
+  }
+
+  const stopArray = [].concat(stop)
+
+  console.log(stopArray)
+
+  const departures = await hslService.getDepartures(stopArray, route);
 
   res.setHeader('Content-Type', 'application/json')
   res.send(departures)
 })
 
-// POST /api/stops allows sending queries to HSL API
-app.post('/api/stops', jsonParser, async (req, res) => {
+// GET /api/stops gets all (cached) Stops. Can be filtered by name startsWith.
+app.get('/api/stops', jsonParser, async (req, res) => {
 
-  const stops = await hslService.getStops(req.body);
+  const stops = await hslService.getStops();
+
+  let name = req.query.name;
 
   res.setHeader('Content-Type', 'application/json')
-  res.send(stops)
+  res.send(name ? stops.filter(stop => stop.name.toLocaleLowerCase().startsWith(name.toLocaleLowerCase())) : stops)
 })
 
+// GET /api/stops:id gets single (cached) Stop 
+app.get('/api/stops/:stopId', jsonParser, async (req, res) => {
 
-// POST /api/routes allows sending queries to HSL API
-app.post('/api/routes', jsonParser, async (req, res) => {
-
-  const routes = await hslService.getRoutes(req.body);
+  const stop = await hslService.getStops(req.params.stopId);
 
   res.setHeader('Content-Type', 'application/json')
-  res.send(routes)
+  res.send(stop)
+})
+
+// GET /api/routes gets all (cached) Routes. Can be filtered by name startsWith.
+app.get('/api/routes', jsonParser, async (req, res) => {
+
+  const routes = await hslService.getRoutes();
+
+  let name = req.query.name;
+
+  res.setHeader('Content-Type', 'application/json')
+  res.send(name ? routes.filter(route => route.longName.toLocaleLowerCase().startsWith(name.toLocaleLowerCase())) : routes)
+})
+
+// GET /api/route:id gets single (cached) Route by id 
+app.get('/api/routes/:routeId', jsonParser, async (req, res) => {
+
+  const route = await hslService.getRoutes(req.params.routeId);
+
+  res.setHeader('Content-Type', 'application/json')
+  res.send(route)
 })
 
 
