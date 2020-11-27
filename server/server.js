@@ -37,24 +37,29 @@ app.get('/api/departures', jsonParser, async (req, res) => {
   let stop = req.query.stop;
   let route = req.query.route;
 
-  console.log(stop)
-
-
-
-
   if (!stop) {
     res.status(400).send('You need to query for one or more stops')
   }
 
   const stopArray = [].concat(stop)
 
-  console.log(stopArray)
-
   const departures = await hslService.getDepartures(stopArray, route);
 
   res.setHeader('Content-Type', 'application/json')
   res.send(departures)
 })
+
+// GET /api/alerts gets all alerts from HSL API.
+app.get('/api/alerts', jsonParser, async (req, res) => {
+
+  const alerts = await hslService.getAlerts();
+
+  res.setHeader('Content-Type', 'application/json')
+  res.send(alerts)
+})
+
+
+
 
 // GET /api/stops gets all (cached) Stops. Can be filtered by name startsWith.
 app.get('/api/stops', jsonParser, async (req, res) => {

@@ -63,7 +63,7 @@ return cachedRoutes;
 
 const getDepartures = async (stopIdArray, routeIdArray) => {
 
-    console.log(stopIdArray)
+    console.log('getting departures for stops:', stopIdArray)
     const query = 
     { query: `{stops(ids: [${stopIdArray.map(stopId => `"${stopId}"`)}]) { gtfsId name stoptimesWithoutPatterns(timeRange: 1800, numberOfDepartures: 20) {
           scheduledArrival
@@ -80,13 +80,52 @@ const getDepartures = async (stopIdArray, routeIdArray) => {
             route {
               shortName
               gtfsId
+              alerts {
+                alertHeaderText
+                alertDescriptionText
+                alertUrl
+                effectiveStartDate
+                effectiveEndDate
+              }
             }
           }
         }
       }}}
     `}
 
-    console.log(query)
+    try {
+        const response = await fetch('https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql', {
+            method: 'post',
+            body: JSON.stringify(query),
+            headers: { 'Content-Type': 'application/json'  }
+          })
+          result = (await response.json());
+          return result
+    } catch (e) {
+        return {error: e}
+    }   
+}
+
+const getAlerts = async () => {
+
+    console.log('getting alerts')
+    const query = 
+    { query: `{
+        alerts {
+          alertHeaderText
+          alertDescriptionText
+          alertUrl
+          effectiveStartDate
+          effectiveEndDate
+          route {
+            gtfsId
+          }
+          stop {
+            gtfsId
+          }
+        }
+      }
+    `}
 
     try {
         const response = await fetch('https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql', {
@@ -104,3 +143,4 @@ const getDepartures = async (stopIdArray, routeIdArray) => {
 exports.getStops = getStops;
 exports.getRoutes = getRoutes;
 exports.getDepartures = getDepartures;
+exports.getAlerts = getAlerts;
