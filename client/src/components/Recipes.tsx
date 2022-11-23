@@ -27,7 +27,7 @@ const Recipes = () => {
         const json = await response.json();
         setData(json);
       } catch (e) {
-        alert(`Error! ${e}`);
+        console.log(`Error! ${e}`);
       }
     };
     getJson();

@@ -10,10 +10,10 @@ const PublicTransport = () => {
   const [stopValue, setStopValue] = React.useState<any[]>([]);
   const [routeValue, setRouteValue] = React.useState<any[]>([]);
  
-  console.log('in publicTransport, stops and routes', stopValue, routeValue);
   return (
     <Container>
-      <Typography variant="h4">Julkisen liikenteen yhteydet</Typography>
+      <Typography variant="h4">Public transport connections (HSL)</Typography>
+      <Typography variant="body2" style={{marginBottom: '16px'}}>Type at least three characters to populate the list</Typography>
       <StopDropdown handleChange={(value: any) => setStopValue(value)} />
       {stopValue.length > 0 ? (
         <RouteDropdown stopValue={stopValue} handleChange={(value: any) => setRouteValue(value)} />

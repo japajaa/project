@@ -4,7 +4,13 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 const theme = createMuiTheme({
   palette: {
-    type: 'dark',
+    type: 'light',
+  },
+  typography: {
+    fontFamily: 'Courier, sans-serif',
+    h1: {
+      fontSize: '4rem',
+    },
   },
 });
 

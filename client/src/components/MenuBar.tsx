@@ -49,7 +49,7 @@ const MenuBar = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Kotiverkko 2.0
+            Jari Reponen
           </Typography>
         </Toolbar>
       </AppBar>
@@ -58,11 +58,8 @@ const MenuBar = () => {
           <ListItem button key="home" component={Link} to="/" onClick={handleDrawerClose}>
             <ListItemText primary="Home" />
           </ListItem>
-          <ListItem button key="recipes" component={Link} to="/reseptit" onClick={handleDrawerClose}>
-            <ListItemText primary="Reseptit" />
-          </ListItem>
           <ListItem button key="publicTransport" component={Link} to="/joukkoliikenne" onClick={handleDrawerClose}>
-            <ListItemText primary="Joukkoliikenne" />
+            <ListItemText primary="Public Transport" />
           </ListItem>
         </List>
       </Drawer>

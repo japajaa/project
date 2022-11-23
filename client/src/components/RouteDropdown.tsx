@@ -71,7 +71,7 @@ const RouteDropdown = ({ handleChange, stopValue }: RouteDropdownProps) => {
         <TextField
             // eslint-disable-next-line react/jsx-props-no-spreading
           {...params}
-          label="Linjat"
+          label="Lines"
           variant="outlined"
           InputProps={{
             ...params.InputProps,

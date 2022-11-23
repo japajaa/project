@@ -67,7 +67,7 @@ const StopDropdown = ({ handleChange }: StopDropdownProps) => {
         <TextField
             // eslint-disable-next-line react/jsx-props-no-spreading
           {...params}
-          label="Pysäkki"
+          label="Stop"
           variant="outlined"
           InputProps={{
             ...params.InputProps,

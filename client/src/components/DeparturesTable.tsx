@@ -40,9 +40,6 @@ const Clock = () => {
   };
   return (   
     <p>
-      {time.toLocaleTimeString().replaceAll('.', ':')}
-      {' '}
-      and 
       {parseClock(time.getTime())}
     </p>
   );
@@ -140,10 +137,10 @@ const DeparturesTable = ({ stopValue, routeValue }: DeparturesTableProps) => {
           <TableHead>
             <TableRow>
               <TableCell>Linja</TableCell>
-              <TableCell align="right">Pysäkki</TableCell>
-              <TableCell align="right">Määränpää</TableCell>
-              <TableCell align="right">Kello</TableCell>
-              <TableCell align="right">Aikaa lähtöön</TableCell>
+              <TableCell align="right">Stop</TableCell>
+              <TableCell align="right">Destination</TableCell>
+              <TableCell align="right">Departure time</TableCell>
+              <TableCell align="right">Time to departure</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
