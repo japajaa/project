@@ -61,6 +61,9 @@ const MenuBar = () => {
           <ListItem button key="publicTransport" component={Link} to="/joukkoliikenne" onClick={handleDrawerClose}>
             <ListItemText primary="Public Transport" />
           </ListItem>
+          <ListItem button key="rogainingPage" component={Link} to="/rogaining" onClick={handleDrawerClose}>
+            <ListItemText primary="Rogaining" />
+          </ListItem>
         </List>
       </Drawer>
     </div>

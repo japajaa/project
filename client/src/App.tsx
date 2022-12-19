@@ -9,6 +9,7 @@ import Home from './components/Home';
 import PublicTransport from './components/PublicTransport';
 import ThemeWrapper from './components/Theme';
 import MenuBar from './components/MenuBar';
+import RogainingPage from './components/RogainingPage';
 
 const App = () => (
   <ThemeWrapper>
@@ -23,6 +24,9 @@ const App = () => (
         </Route>
         <Route path="/joukkoliikenne">
           <PublicTransport />
+        </Route>
+        <Route path="/rogaining">
+          <RogainingPage />
         </Route>
       </Switch>
     </Router>

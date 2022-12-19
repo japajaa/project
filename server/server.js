@@ -3,9 +3,12 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const app = express()
+const https = require('https');
+const geolib = require('geolib');
+const fs = require('fs');
 const apiPort = process.env.PORT || 4000
-const recipesResource = require('./resources/recipes.resource')
-const hslService = require('./services/hsl.service')
+// const recipesResource = require('./resources/recipes.resource')
+const hslService = require('./services/hsl.service');
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
@@ -21,7 +24,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 app.get('/', urlencodedParser, (req, res) => {
   res.send('Hello World!')
 })
- 
+/*
 // GET /api/recipes returns all recipes
 app.get('/api/recipes', jsonParser, async (req, res) => {
 
@@ -30,7 +33,7 @@ const allRecipes = await recipesResource.readRecipes();
   res.setHeader('Content-Type', 'application/json')
   res.send(allRecipes)
 })
-
+*/
 // POST /api/departures returns list of departures for chosen routes at chosen stops
 app.get('/api/departures', jsonParser, async (req, res) => {
 
@@ -102,4 +105,87 @@ app.get('/api/routes/:routeId', jsonParser, async (req, res) => {
 })
 
 
-app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`))
+// POST /api/rogainingRoute returns calculated route to frontend.
+app.post('/api/rogainingRoute', jsonParser, async (req, res) => {
+
+  let counter = 0;
+
+  const {points, velocity, timeLimit, randomFactor} = req.body
+
+  const maxDistance = (parseFloat(velocity) * (1 - (parseFloat(randomFactor) / 100))) * parseFloat(timeLimit) * 1000
+
+  const startPoint = points.find((point) => point.start)
+  const endPoint = points.find((point) => point.end)
+
+  const updatedPoints = []
+  for (let i = 0; i < points.length; i++) {
+    updatedPoints.push({...points[i], distanceToGoal: geolib.getDistance({ latitude: points[i].coordinates[0], longitude: points[i].coordinates[1]}, { latitude: endPoint.coordinates[0], longitude: endPoint.coordinates[1]})})
+  }
+  
+  let calculatedRoutes = [];
+
+  const addLocationToRoute = (routeLength, routePoints, routeLocations, pointToAdd) => {
+    const newLength = routeLength + geolib.getDistance({ latitude: pointToAdd.coordinates[0], longitude: pointToAdd.coordinates[1]}, { latitude: routeLocations[routeLocations.length - 1].coordinates[0], longitude: routeLocations[routeLocations.length - 1].coordinates[1]})
+ 
+
+    if ((newLength + pointToAdd.distanceToGoal) <= maxDistance) {
+      routeLength = newLength;
+      routePoints = routePoints + parseFloat(pointToAdd.pointValue)
+      routeLocations = [...routeLocations, pointToAdd]
+      return { routePoints, routeLength, routeLocations }
+    }
+  }
+
+  const loopLocations = (locationsArray, initialRouteLength, initialRoutePoints, initialRouteLocations, initialDistanceToGoal) => {
+    counter = counter + 1
+    if (counter % 1000 === 0) console.log('loopLocations counter: ', counter)
+
+// create a shortlist of x locations with best points/meters ratio
+const shortListLength = 2
+const coordsOfLastPoint = initialRouteLocations[initialRouteLocations.length - 1].coordinates
+
+const shortList = locationsArray.sort((a, b) => (b.pointValue / geolib.getDistance({ latitude: b.coordinates[0], longitude: b.coordinates[1]}, { latitude: coordsOfLastPoint[0], longitude: coordsOfLastPoint[1]})) - (a.pointValue / geolib.getDistance({ latitude: a.coordinates[0], longitude: a.coordinates[1]}, { latitude: coordsOfLastPoint[0], longitude: coordsOfLastPoint[1]}))).slice(0,shortListLength);
+
+for (let i = 0; i < shortList.length; i++) {
+  let routeLength = initialRouteLength;
+  let routePoints = initialRoutePoints;
+  let routeLocations = initialRouteLocations
+
+  const newRoute = addLocationToRoute(routeLength, routePoints, routeLocations, shortList[i])
+
+  if (newRoute !== undefined) {
+    const possibleNewStops = locationsArray.filter(loc => loc.distanceToGoal < maxDistance - newRoute.routeLength && !newRoute.routeLocations.map(l => l.id).includes(loc.id));
+    if (possibleNewStops.length === 0) calculatedRoutes = [...calculatedRoutes, {routePoints: newRoute.routePoints, routeLength: newRoute.routeLength + shortList[i].distanceToGoal, routeLocations: [...newRoute.routeLocations, endPoint]}]
+    loopLocations(possibleNewStops, newRoute.routeLength, newRoute.routePoints, newRoute.routeLocations, shortList[i].distanceToGoal)
+  } else {
+    calculatedRoutes = [...calculatedRoutes, {routePoints: initialRoutePoints, routeLength: initialRouteLength + initialDistanceToGoal, routeLocations: [...initialRouteLocations, endPoint]}]
+  }
+}
+  }
+
+  loopLocations(updatedPoints.filter(loc => loc.id !== startPoint.id), 0, 0, [startPoint], startPoint.distanceToGoal)
+
+  const sortedRoutes = calculatedRoutes.sort((a, b) => {if (b.routePoints === a.routePoints) {return a.routeLength - b.routeLength} else {return b.routePoints - a.routePoints}}).slice(0,10);
+
+  const response = {maxDistance, sortedRoutes}
+  res.setHeader("Content-Type", "application/json");
+    res.writeHead(200);
+    res.end(JSON.stringify(response, null, 3));
+})
+
+
+
+
+
+
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+
+const sslServer=https.createServer(options,app);
+sslServer.listen(apiPort,()=>{
+console.log(`Server running on port ${apiPort}`)
+})
+
+// app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`))
